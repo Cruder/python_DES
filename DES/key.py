@@ -11,7 +11,8 @@ class Key:
         string = ''
         for i in range(0, 8):
             for j in range(0, 8):
-                if j == 7: string += ' | '
+                if j == 7:
+                    string += ' | '
                 string += self.key[i * 8 + j] + ' '
             string += "\n"
         return string

@@ -1,4 +1,8 @@
 class Extractor:
+    """
+    Extract 16 sub key from a key
+    """
+
     def __init__(self, cp1, cp2):
         self.cp1 = cp1
         self.cp2 = cp2
@@ -15,6 +19,9 @@ class Extractor:
         print(self.cp2[0])
         left = permuted[0:28]
         right = permuted[28:]
+
+        print("Left : ", left)
+        print("Right : ", right)
 
         sub_keys = [None] * 16
         for index in range(16):
