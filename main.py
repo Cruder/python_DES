@@ -2,39 +2,13 @@ import sys
 from DES.key import Key
 from DES.constants import Constants
 from DES.extractor import Extractor
+from DES.packager import Packager
 
 
 from DES.ConvAlphaBin import conv_bin, nib_vnoc
 
 
-class Packager:
-    def __init__(self, packet_size, permutation_matrix):
-        self.packet_size = packet_size
-        self.permutation_matrix = permutation_matrix
-
-    def __call__(self, message):
-        print("Enter Packager")
-        print("==============")
-
-        binary_message = conv_bin(message)
-
-        packets = self.text_cutter(binary_message, self.packet_size)
-        return list(map(self.permutation, packets))
-
-    @staticmethod
-    def text_cutter(text, size):
-        packets = [text[i:i + size] for i in range(0, len(text), size)]
-        packets[-1] = packets[-1] + '0' * (size - len(packets[-1]))
-        return packets
-
-    def permutation(self, packet):
-        new_packet = ''
-        for index in range(self.packet_size):
-            position = int(self.permutation_matrix[index]) - 1
-            print('position', position)
-            new_packet += packet[position]
-        return new_packet
-
+from DES.encrypt import Encrypt
 
 class Round:
     def __init__(self, key, sub_matrix, expension_matrix):
@@ -63,7 +37,9 @@ class Round:
         substitution_numbers = ['1001', '1001', '1001', '1001', '1001', '1001', '1001', '1001'] # stub
 
         # 5 XOR droite
-        last_result = "01111111101100100000001111110010"
+        val = ''
+        for i in len(32):
+            val += self.xor(substitution_numbers, left[i])
 
         print(new_block)
 
@@ -81,37 +57,50 @@ class Round:
         return "0" if a == b else "1"
 
 
-if __name__ == '__main__':
-    constants = Constants()
-    extractor = Extractor(constants.cp1(), constants.cp2())
-    packager = Packager(64, constants.pi())  # 64 bits size + initial permutation
+# if __name__ == '__main__':
+#     constants = Constants()
+#     extractor = Extractor(constants.cp1(), constants.cp2())
+#     packager = Packager(64, constants.pi())  # 64 bits size + initial permutation
+#
+#     print(sys.argv[1])
+#     print(sys.argv[2])
+#
+#     key_filename = sys.argv[1]
+#     msg_filename = sys.argv[2]
+#
+#     # key = Key.from_file(key_filename)
+#     #
+#     # print(key)
+#
+#     message = "Hello World"
+#
+#     key = Key('0101111001011011010100100111111101010001000110101011110010010001')
+#     print(key)
+#
+#     print("CP1 => ", constants.cp1())
+#
+#     sub_keys = key.extract_sub_keys(extractor)
+#
+#     message_packets = packager(message)
+#     print("Message => ", message)
+#     print("Message packets => ", message_packets)
+#
+#     print(sub_keys)
+#
+#     print('Permutation', packager.permutation('1101110010111011110001001101010111100110111101111100001000110010'))
+#
+#
+#
+#     print("Message a dechiffer", nib_vnoc('1101110010111011110001001101010111100110111101111100001000110010100111010010101101101011111000110011101011011111'))
+#     print("Message a chiffer", conv_bin('!LvE.eb!wjKdK,vjOtè'))
 
-    print(sys.argv[1])
-    print(sys.argv[2])
+if __name__ == '__main__':
+    message = "Hello World my friend"
 
     key_filename = sys.argv[1]
-    msg_filename = sys.argv[2]
+    key = Key.from_file(key_filename)
 
-    # key = Key.from_file(key_filename)
-    #
-    # print(key)
+    encrypt = Encrypt()
+    result = encrypt(message, key)
 
-    message = "Hello World"
-
-    key = Key('0101111001011011010100100111111101010001000110101011110010010001')
-    print(key)
-
-    print("CP1 => ", constants.cp1())
-
-    sub_keys = key.extract_sub_keys(extractor)
-
-    message_packets = packager(message)
-
-    print(sub_keys)
-
-    print('Permutation', packager.permutation('1101110010111011110001001101010111100110111101111100001000110010'))
-
-
-
-    print("Message a dechiffer", nib_vnoc('1101110010111011110001001101010111100110111101111100001000110010100111010010101101101011111000110011101011011111'))
-    print("Message a chiffer", conv_bin('!LvE.eb!wjKdK,vjOtè'))
+    print('result', result)
