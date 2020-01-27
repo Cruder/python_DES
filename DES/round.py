@@ -20,7 +20,7 @@ class Round:
         print(new_block)
 
         # 3.1 Cut into 8 block 6 bits
-        blocks_pair = [new_block[i:i + 8] for i in range(0, len(new_block), 6)]
+        blocks_pair = [new_block[i:i + 6] for i in range(0, len(new_block), 6)]
 
         print('block pair', blocks_pair)
 
@@ -45,14 +45,14 @@ class Round:
         # 5 XOR droite
         val = ''
         for i in range(32):
-            val += self.xor(substitution_numbers, left[i])
+            val += self.xor(substitution_numbers[i], left[i])
 
         return right, val
 
     def expand(self, block):
         new_block = ''
         for index in range(48):
-            position = int(self.expension_matrix[index]) - 1
+            position = int(self.expension_matrix[index])
             new_block += block[position]
         return new_block
 
