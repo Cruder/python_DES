@@ -7,6 +7,10 @@ class Extractor:
         self.cp1 = cp1
         self.cp2 = cp2
 
+    def first_perm(self, key):
+
+        return self.__permute(key, self.cp1[0])
+
     def __call__(self, key):
         permuted = self.__permute(key, self.cp1[0])
         left = permuted[0:28]
