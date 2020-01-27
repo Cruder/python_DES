@@ -43,11 +43,12 @@ class Encrypt:
         for packet in packets:
             # packet : String | Permuted using PI
             packet = initial_permutator(packet, constants.pi())
+            # packet = '0111110110101011001111010010101001111111101100100000001111110010'
 
             for i in range(16):
                 round = Round(sub_keys[i], constants.perm(), constants.expansion(), constants.substitutions())
-                left = message[0:32]
-                right = message[32:]
+                left = packet[0:32]
+                right = packet[32:]
                 left, right = round(left, right)
                 packet = left + right
 
@@ -86,15 +87,15 @@ class Decrypt:
             # packet : String | Permuted using PI
             packet = initial_permutator(packet, constants.pi())
 
-            for i in range(16, 0, -1):
+            for i in range(15, -1, -1):
                 round = Round(sub_keys[i], constants.perm(), constants.expansion(), constants.substitutions())
-                left = message[0:32]
-                right = message[32:]
+                left = packet[0:32]
+                right = packet[32:]
                 left, right = round(right, left)
-                packet = left + right
+                packet = right + left
 
             packet = initial_permutator(packet, constants.inv_pi())
             new_packets.append(packet)
         new_packets = ''.join(new_packets)
 
-        nib_vnoc('') # Final
+        return nib_vnoc(new_packets) # Final
