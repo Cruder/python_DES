@@ -1,7 +1,7 @@
 import unittest
 
 from DES.constants import Constants
-from DES.encrypt import Encrypt, Decrypt
+from DES.encrypt import Encrypt
 from DES.extractor import Extractor
 from DES.key import Key
 from DES.packager import Packager
@@ -57,7 +57,7 @@ class MyTestCase(unittest.TestCase):
         expected_packet_perm = "0111110110101011001111010010101001111111101100100000001111110010"
         self.assertEqual(packet_perm, expected_packet_perm)
 
-    def test_round_one(self):
+    def _round_one(self):
         key = Key.from_file("./Messages/Clef_de_pdf.txt")
 
         extractor = Extractor(self.constants.cp1(), self.constants.cp2())
@@ -99,17 +99,10 @@ class MyTestCase(unittest.TestCase):
         key = Key.from_file("./Messages/Clef_de_1.txt")
         original_message = "Hello world my friends"
         encrypt = Encrypt()
-        crypted_message = encrypt(original_message, key)
-        decrypt = Decrypt()
-        decrypted_message = decrypt(crypted_message, key)
+        encrypted_message = encrypt(original_message, key, "encrypt")
+        decrypted_message = encrypt(encrypted_message, key, "decrypt")
         original_len = len(original_message)
         self.assertEqual(decrypted_message[:original_len], original_message)
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
