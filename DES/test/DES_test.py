@@ -1,6 +1,7 @@
 import unittest
 
 from DES.constants import Constants
+from DES.encrypt import Encrypt, Decrypt
 from DES.extractor import Extractor
 from DES.key import Key
 from DES.packager import Packager
@@ -70,11 +71,14 @@ class MyTestCase(unittest.TestCase):
         expected_round_one = "0111111110110010000000111111001001111111101100100000001111110010"
         self.assertEqual(left+right, expected_round_one)
 
-    def test_all_round(self):
-        key = Key.from_file("./Messages/Clef_de_pdf.txt")
 
+    def get_sub_keys(self):
+        key = Key.from_file("./Messages/Clef_de_pdf.txt")
         extractor = Extractor(self.constants.cp1(), self.constants.cp2())
-        sub_keys = key.extract_sub_keys(extractor)
+        return key.extract_sub_keys(extractor)
+
+    def test_crypt(self):
+        sub_keys = self.get_sub_keys()
         packets = self.packager(self.message)
 
         packet = self.initial_permutator(packets[0], self.constants.pi())
@@ -84,8 +88,24 @@ class MyTestCase(unittest.TestCase):
             right = packet[32:]
             left, right = round(left, right)
             packet = left + right
+
         expected_all_round = "0011000011001010010000100001110011010101001001100001000100011010"
         self.assertEqual(packet, expected_all_round)
+        crypted_message = self.initial_permutator(packet, self.constants.inv_pi())
+        expected_crypted_message = "1000100000110110101000010001001111001011011000001001010010010000"
+        self.assertEqual(crypted_message, expected_crypted_message)
+
+    def test_des_integration(self):
+        key = Key.from_file("./Messages/Clef_de_1.txt")
+        original_message = "Hello world my friends"
+        encrypt = Encrypt()
+        crypted_message = encrypt(original_message, key)
+        decrypt = Decrypt()
+        decrypted_message = decrypt(crypted_message, key)
+        original_len = len(original_message)
+        self.assertEqual(decrypted_message[:original_len], original_message)
+
+
 
 
 
